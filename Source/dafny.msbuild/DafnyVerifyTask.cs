@@ -42,12 +42,8 @@ namespace DafnyMSBuild
                 Log.LogMessage(MessageImportance.High, "Verifying {0} {1}", file.ItemSpec, success ? "succeeded!" : "failed:");
                 if (!success)
                 {
-                    // TODO: This isn't a great way to echo all output, but it at least
-                    // largely prevents interwoven output from multiple processes.
                     string output = verifyProcess.StandardOutput.ReadToEnd();
                     Log.LogMessage(MessageImportance.High, output);
-                    string errors = verifyProcess.StandardError.ReadToEnd();
-                    Log.LogMessage(MessageImportance.High, errors);
                 }
                 return success;
             }
