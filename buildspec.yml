@@ -2,7 +2,7 @@ version: 0.2
 phases:
   install:
     runtime-versions:
-      dotnet: 2.2
+      dotnet: 3.0
     commands:
       - cd ..
       # TODO: Temporary - fix the dafny script to not use which instead!
