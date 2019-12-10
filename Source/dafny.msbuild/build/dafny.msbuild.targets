@@ -1,0 +1,25 @@
+<Project>
+    <!-- TODO: hook this up as a CodeAnalysis plugin instead? -->
+    <Target Name="VerifyDafny">
+        <DafnyVerifyTask DafnySourceFiles="@(DafnySource)" DafnyExecutable="$(Dafny)" />
+    </Target>
+    
+    <Target Name="CompileDafny"
+            AfterTargets="ResolveReferences"
+            BeforeTargets="CoreCompile"
+            Inputs="$(MSBuildProjectFile);@(DafnySource)"
+            Outputs="$(DafnyOutputFile)">
+        <Message Text="Compiling Dafny source files to $(DafnyOutputFile)..." Importance="high"/>
+        <Exec Command="$(Dafny) /out:$(DafnyOutputFile) @(DafnySource, ' ') /compile:0 /spillTargetCode:3 /noVerify" />
+        <ItemGroup>
+            <Compile Include="$(DafnyOutputFile)" />
+            <!-- Register the generated file to be deleted when cleaning -->
+            <FileWrites Include="$(DafnyOutputFile)"/>
+        </ItemGroup>
+    </Target>
+
+    <!-- TODO: Define Inputs and Outputs for this -->
+    <Target Name="CompileDafnyToJS">
+        <Exec Command="$(Dafny) /out:build/Main @(DafnySource, ' ') /compile:2 /noVerify /noIncludes /compileTarget:js /spillTargetCode:1" />
+    </Target>
+</Project>
