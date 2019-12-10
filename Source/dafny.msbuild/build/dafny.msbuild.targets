@@ -1,7 +1,7 @@
 <Project>
     <!-- TODO: hook this up as a CodeAnalysis plugin instead? -->
     <Target Name="VerifyDafny">
-        <DafnyVerifyTask DafnySourceFiles="@(DafnySource)" DafnyExecutable="$(Dafny)" />
+        <DafnyVerifyTask DafnySourceFiles="@(DafnySource)" DafnyExecutable="$(Dafny)" TimeLimit="$(DafnyVerificationTimeLimit)" />
     </Target>
     
     <Target Name="CompileDafny"

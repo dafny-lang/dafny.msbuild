@@ -18,6 +18,9 @@ namespace DafnyMSBuild
         
         [Required]
         public ITaskItem[] DafnySourceFiles { get; set; }
+
+        [Required]
+        public string TimeLimit { get; set; }
         
         public override bool Execute()
         {
@@ -31,6 +34,7 @@ namespace DafnyMSBuild
             {
                 verifyProcess.StartInfo.FileName = DafnyExecutable;
                 verifyProcess.StartInfo.ArgumentList.Add("/compile:0");
+                verifyProcess.StartInfo.ArgumentList.Add("/timeLimit:" + TimeLimit);
                 verifyProcess.StartInfo.ArgumentList.Add(file.ItemSpec);
                 verifyProcess.StartInfo.UseShellExecute = false;
                 verifyProcess.StartInfo.RedirectStandardOutput = true;
