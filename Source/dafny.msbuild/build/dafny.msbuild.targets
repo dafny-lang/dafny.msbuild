@@ -8,7 +8,10 @@
             AfterTargets="ResolveReferences"
             BeforeTargets="CoreCompile"
             Inputs="$(MSBuildProjectFile);@(DafnySource)"
-            Outputs="$(DafnyOutputFile)">
+            Outputs="$(IntermediateOutputPath)DafnyMain.cs">
+        <PropertyGroup>
+            <DafnyOutputFile>$(IntermediateOutputPath)DafnyMain.cs</DafnyOutputFile>
+        </PropertyGroup>
         <Message Text="Compiling Dafny source files to $(DafnyOutputFile)..." Importance="high"/>
         <Exec Command="$(Dafny) /out:$(DafnyOutputFile) @(DafnySource, ' ') /compile:0 /spillTargetCode:3 /noVerify" />
         <ItemGroup>

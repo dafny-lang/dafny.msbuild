@@ -9,6 +9,15 @@
       <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
     </ItemGroup>
 
+    <!--
+        Normally a project just has to reference this package like this:
+        
+        <PackageReference Include="dafny.msbuild" Version="*.*.*" />
+        
+        But to test the functionality without packaging up the nupkg itself,
+        we import the properties and target directly in the same way nuget
+        will automatically instead.
+    -->
     <Import Project="../../Source/dafny.msbuild/build/dafny.msbuild.props" />
     <Import Project="../../Source/dafny.msbuild/build/dafny.msbuild.targets" />
 
