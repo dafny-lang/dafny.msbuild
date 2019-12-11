@@ -1,0 +1,6 @@
+.idea
+/Source/dafny.msbuild/obj
+/Source/dafny.msbuild/bin
+/Test/TestProject/obj
+/Test/TestProject/bin
+/Test/TestProject/dafny-generated
