@@ -1,7 +1,7 @@
 <Project>
     <!-- TODO: hook this up as a CodeAnalysis plugin instead? -->
     <Target Name="VerifyDafny">
-        <DafnyVerifyTask DafnySourceFiles="@(DafnySource)" DafnyExecutable="$(Dafny)" TimeLimit="$(DafnyVerificationTimeLimit)" />
+        <DafnyVerifyTask DafnySourceFiles="@(DafnySource)" DafnyExecutable="$(DafnyBinariesDir)$(Dafny)" TimeLimit="$(DafnyVerificationTimeLimit)" />
     </Target>
     
     <Target Name="CompileDafny"
@@ -13,7 +13,7 @@
             <DafnyOutputFile>$(IntermediateOutputPath)DafnyMain.cs</DafnyOutputFile>
         </PropertyGroup>
         <Message Text="Compiling Dafny source files to $(DafnyOutputFile)..." Importance="high"/>
-        <Exec Command="$(Dafny) /out:$(DafnyOutputFile) @(DafnySource, ' ') /compile:0 /spillTargetCode:3 /noVerify" />
+        <Exec Command="$(DafnyBinariesDir)$(Dafny) /out:$(DafnyOutputFile) @(DafnySource, ' ') /compile:0 /spillTargetCode:3 /noVerify" />
         <ItemGroup>
             <Compile Include="$(DafnyOutputFile)" />
             <!-- Register the generated file to be deleted when cleaning -->
