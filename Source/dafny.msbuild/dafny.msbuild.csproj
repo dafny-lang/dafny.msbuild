@@ -6,9 +6,10 @@
         <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
         <!-- Stop dotnet from complaining about the non-standard layout -->
         <NoPackageAnalysis>true</NoPackageAnalysis>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         
-        <VersionPrefix>0.1.2</VersionPrefix>
-        <VersionSuffix>build$([System.DateTime]::Now.ToString('yyyyMMdd-HHmm'))</VersionSuffix>
+        <VersionPrefix>0.2.0</VersionPrefix>
+        <VersionSuffix Condition="$(Configuration) == 'Debug'">build$([System.DateTime]::Now.ToString('yyyyMMdd-HHmm'))</VersionSuffix>
         <RootNamespace>DafnyMSBuild</RootNamespace>
     </PropertyGroup>
 

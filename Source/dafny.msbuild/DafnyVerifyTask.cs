@@ -22,9 +22,16 @@ namespace DafnyMSBuild
         [Required]
         public string TimeLimit { get; set; }
         
+        public string Jobs { get; set; }
+
         public override bool Execute()
         {
-            return DafnySourceFiles.AsParallel().All(VerifyDafnyFile);
+            ParallelQuery<ITaskItem> query = DafnySourceFiles.AsParallel();
+            if (Jobs != null)
+            {
+                query = query.WithDegreeOfParallelism(int.Parse(Jobs));
+            }
+            return query.All(VerifyDafnyFile);
         }
 
         private bool VerifyDafnyFile(ITaskItem file)
