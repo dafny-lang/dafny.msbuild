@@ -28,4 +28,5 @@ phases:
       - dotnet build Source/dafny.msbuild.sln
       - cd Test
       - dotnet build -t:VerifyDafny
+      - dotnet build -t:VerifyDafny -p:VerifyDafnyJobs=1
       - dotnet test
