@@ -1,4 +1,4 @@
-![Build Status](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiQSt4cEhHMlFKd2VmbU12K2ZSRkg4ejlRQUF1Z0dUWWNTaTc2RHVVYWo5N3VxdVZFaFFsWm5SbVFLVktWQk1pWjY1c2F2Sm0zZG9vMCtxSzhEdzkvd3k4PSIsIml2UGFyYW1ldGVyU3BlYyI6ImJKRWRPOHhBZlNOYVk1YlgiLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=master)
+![Build and Test](https://github.com/dafny-lang/dafny.msbuild/workflows/Build%20and%20Test/badge.svg)
 
 # dafny.msbuild
 MSBuild tasks for use in projects containing Dafny source code
