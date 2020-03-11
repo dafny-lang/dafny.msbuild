@@ -1,0 +1,62 @@
+name: Build and Test
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        # Windows build is not yet working due to issues with the checked-in z3.exe
+        os: [ubuntu-latest]
+      fail-fast: false
+    steps:
+      - uses: nuget/setup-nuget@v1
+      - name: Add msbuild to PATH
+        if: matrix.os == 'windows-latest'
+        uses: microsoft/setup-msbuild@v1.0.0
+      - name: Checkout Boogie
+        uses: actions/checkout@v2
+        with:
+          repository: boogie-org/boogie
+          ref: v2.4.2
+          path: boogie
+      - name: Nuget Restore Boogie
+        run: nuget restore boogie/Source/Boogie.sln
+      - name: Build Boogie
+        run: msbuild boogie/Source/Boogie.sln
+      - name: Checkout Dafny
+        uses: actions/checkout@v2
+        with:
+          repository: dafny-lang/dafny
+          path: dafny
+      - name: Get Z3
+        if: matrix.os != 'windows-latest'
+        run: |
+          wget https://github.com/Z3Prover/z3/releases/download/z3-4.8.4/z3-4.8.4.d6df51951f4c-x64-ubuntu-14.04.zip
+          unzip z3*.zip && rm *.zip
+          cp -r z3* dafny/Binaries/z3
+      - name: Nuget Restore Dafny
+        run: nuget restore dafny/Source/Dafny.sln
+      - name: Build Dafny
+        run: msbuild dafny/Source/Dafny.sln
+      - name: Add Dafny to path
+        run: echo "::add-path::$PWD/dafny/Binaries"
+      - name: Checkout dafny.msbuild
+        uses: actions/checkout@v2
+        with:
+          path: dafny.msbuild
+      - name: Build dafny.msbuild
+        run: dotnet build dafny.msbuild/Source/dafny.msbuild.sln
+      - name: Test VerifyDafny task (parallel)
+        run: dotnet build dafny.msbuild/Test -t:VerifyDafny
+      - name: Test VerifyDafny task (sequential)
+        run: dotnet build dafny.msbuild/Test -t:VerifyDafny -p:VerifyDafnyJobs=1
+      - name: Run tests on TestProject
+        run: dotnet test dafny.msbuild/Test
