@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace DafnyMSBuild
         public ITaskItem[] DafnySourceFiles { get; set; }
 
         [Required]
-        public string DafnyArgs { get; set; }
+        public string TimeLimit { get; set; }
         
         public string Jobs { get; set; }
 
@@ -31,12 +32,11 @@ namespace DafnyMSBuild
                 options.MaxDegreeOfParallelism = int.Parse(Jobs);
             }
 
-            bool verified = true;
+            ConcurrentBag<bool> results = new ConcurrentBag<bool>();
             Parallel.ForEach(DafnySourceFiles, options, file => {
-                // Not atomic but races are safe
-                verified &= VerifyDafnyFile(file);
+                results.Add(VerifyDafnyFile(file));
             });
-            return verified;
+            return results.All(x => x);
         }
 
         private bool VerifyDafnyFile(ITaskItem file) {
@@ -45,7 +45,7 @@ namespace DafnyMSBuild
             using (System.Diagnostics.Process verifyProcess = new System.Diagnostics.Process()) {
                 verifyProcess.StartInfo.FileName = DafnyExecutable;
                 verifyProcess.StartInfo.ArgumentList.Add("/compile:0");
-                verifyProcess.StartInfo.ArgumentList.Add(DafnyArgs);
+                verifyProcess.StartInfo.ArgumentList.Add("/timeLimit:" + TimeLimit);
                 verifyProcess.StartInfo.ArgumentList.Add(file.ItemSpec);
                 verifyProcess.StartInfo.UseShellExecute = false;
                 verifyProcess.StartInfo.RedirectStandardOutput = true;

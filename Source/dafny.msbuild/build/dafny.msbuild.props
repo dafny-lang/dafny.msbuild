@@ -21,7 +21,7 @@
         Binaries directory is already on your $PATH
         -->
         <DafnyBinariesDir></DafnyBinariesDir>
-        <DafnyVerificationArgs>/timeLimit:30</DafnyVerificationArgs>
+        <DafnyVerificationTimeLimit>30</DafnyVerificationTimeLimit>
     </PropertyGroup>
 
     <ItemGroup>

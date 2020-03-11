@@ -2,8 +2,8 @@
     <!-- TODO: hook this up as a CodeAnalysis plugin instead? -->
     <Target Name="VerifyDafny">
         <DafnyVerifyTask DafnySourceFiles="@(DafnySource)" 
-                         DafnyExecutable="$(DafnyBinariesDir)$(Dafny)" 
-                         DafnyArgs="$(DafnyVerificationArgs)"
+                         DafnyExecutable="$(DafnyBinariesDir)$(Dafny)"
+                         TimeLimit="$(DafnyVerificationTimeLimit)"
                          Jobs="$(VerifyDafnyJobs)"/>
     </Target>
     
@@ -11,9 +11,9 @@
             AfterTargets="ResolveReferences"
             BeforeTargets="CoreCompile"
             Inputs="$(MSBuildProjectFile);@(DafnySource)"
-            Outputs="$(IntermediateOutputPath)DafnyMain.cs">
+            Outputs="$(IntermediateOutputPath)GeneratedFromDafny.cs">
         <PropertyGroup>
-            <DafnyOutputFile>$(IntermediateOutputPath)DafnyMain.cs</DafnyOutputFile>
+            <DafnyOutputFile>$(IntermediateOutputPath)GeneratedFromDafny.cs</DafnyOutputFile>
         </PropertyGroup>
         <Message Text="Compiling Dafny source files to $(DafnyOutputFile)..." Importance="high"/>
         <Exec Command="$(DafnyBinariesDir)$(Dafny) /out:$(DafnyOutputFile) @(DafnySource, ' ') /compile:0 /spillTargetCode:3 /noVerify" />
