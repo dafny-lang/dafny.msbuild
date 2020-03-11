@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Build.Framework;
-using Microsoft.Build.Utilities;
+using Task = Microsoft.Build.Utilities.Task;
 
 namespace DafnyMSBuild
 {
@@ -20,28 +21,31 @@ namespace DafnyMSBuild
         public ITaskItem[] DafnySourceFiles { get; set; }
 
         [Required]
-        public string TimeLimit { get; set; }
+        public string DafnyArgs { get; set; }
         
         public string Jobs { get; set; }
 
-        public override bool Execute()
-        {
-            ParallelQuery<ITaskItem> query = DafnySourceFiles.AsParallel();
-            if (Jobs != null)
-            {
-                query = query.WithDegreeOfParallelism(int.Parse(Jobs));
+        public override bool Execute() {
+            ParallelOptions options = new ParallelOptions();
+            if (Jobs != null) {
+                options.MaxDegreeOfParallelism = int.Parse(Jobs);
             }
-            return query.All(VerifyDafnyFile);
+
+            bool verified = true;
+            Parallel.ForEach(DafnySourceFiles, options, file => {
+                // Not atomic but races are safe
+                verified &= VerifyDafnyFile(file);
+            });
+            return verified;
         }
 
-        private bool VerifyDafnyFile(ITaskItem file)
-        {
+        private bool VerifyDafnyFile(ITaskItem file) {
             Log.LogMessage(MessageImportance.High, "Verifying {0}...", file.ItemSpec);
-            using (System.Diagnostics.Process verifyProcess = new System.Diagnostics.Process())
-            {
+            
+            using (System.Diagnostics.Process verifyProcess = new System.Diagnostics.Process()) {
                 verifyProcess.StartInfo.FileName = DafnyExecutable;
                 verifyProcess.StartInfo.ArgumentList.Add("/compile:0");
-                verifyProcess.StartInfo.ArgumentList.Add("/timeLimit:" + TimeLimit);
+                verifyProcess.StartInfo.ArgumentList.Add(DafnyArgs);
                 verifyProcess.StartInfo.ArgumentList.Add(file.ItemSpec);
                 verifyProcess.StartInfo.UseShellExecute = false;
                 verifyProcess.StartInfo.RedirectStandardOutput = true;
@@ -50,12 +54,14 @@ namespace DafnyMSBuild
                 verifyProcess.Start();
                 verifyProcess.WaitForExit();
                 bool success = verifyProcess.ExitCode == 0;
+                
                 Log.LogMessage(MessageImportance.High, "Verifying {0} {1}", file.ItemSpec, success ? "succeeded!" : "failed:");
                 if (!success)
                 {
                     string output = verifyProcess.StandardOutput.ReadToEnd();
                     Log.LogMessage(MessageImportance.High, output);
                 }
+                
                 return success;
             }
         }

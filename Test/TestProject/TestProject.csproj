@@ -22,6 +22,6 @@
     <Import Project="../../Source/dafny.msbuild/build/dafny.msbuild.targets" />
 
     <PropertyGroup>
-        <DafnyVerificationTimeLimit>100</DafnyVerificationTimeLimit>
+        <DafnyVerificationArgs>/timeLimit:100</DafnyVerificationArgs>
     </PropertyGroup>
 </Project>
