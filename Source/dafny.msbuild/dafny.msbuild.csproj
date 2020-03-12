@@ -8,7 +8,7 @@
         <NoPackageAnalysis>true</NoPackageAnalysis>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         
-        <VersionPrefix>0.3.0</VersionPrefix>
+        <VersionPrefix>0.4.0</VersionPrefix>
         <VersionSuffix Condition="$(Configuration) == 'Debug'">build$([System.DateTime]::Now.ToString('yyyyMMdd-HHmm'))</VersionSuffix>
         <RootNamespace>DafnyMSBuild</RootNamespace>
     </PropertyGroup>
