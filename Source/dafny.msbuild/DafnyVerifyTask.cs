@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Build.Framework;
@@ -44,9 +43,7 @@ namespace DafnyMSBuild
             
             using (System.Diagnostics.Process verifyProcess = new System.Diagnostics.Process()) {
                 verifyProcess.StartInfo.FileName = DafnyExecutable;
-                verifyProcess.StartInfo.ArgumentList.Add("/compile:0");
-                verifyProcess.StartInfo.ArgumentList.Add("/timeLimit:" + TimeLimit);
-                verifyProcess.StartInfo.ArgumentList.Add(file.ItemSpec);
+                verifyProcess.StartInfo.Arguments = String.Format("/compile:0 /timeLimit:{0} {1}", TimeLimit, file.ItemSpec);
                 verifyProcess.StartInfo.UseShellExecute = false;
                 verifyProcess.StartInfo.RedirectStandardOutput = true;
                 verifyProcess.StartInfo.RedirectStandardError = true;
