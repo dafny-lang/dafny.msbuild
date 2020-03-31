@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <TargetFrameworks>netcoreapp3.0</TargetFrameworks>
+        <TargetFrameworks>netstandard2.0</TargetFrameworks>
         <RootNamespace>DafnyMSBuild</RootNamespace>
         <BuildOutputTargetFolder>tasks</BuildOutputTargetFolder>
         <!-- Stop dotnet from complaining about the non-standard layout -->
@@ -21,8 +21,6 @@
         <PackageReference Include="Microsoft.Build.Framework" Version="15.1.1012" PrivateAssets="All" />
         <PackageReference Include="Microsoft.Build.Utilities.Core" Version="15.1.1012" PrivateAssets="All" />
         <PackageReference Include="System.Linq.Parallel" Version="4.3.0" PrivateAssets="All" />
-        <PackageReference Include="System.Collections.Immutable" Version="1.7.0" PrivateAssets="All" />
-        <PackageReference Include="System.Runtime" Version="4.3.1" PrivateAssets="All" />
+        <PackageReference Include="System.Collections.Immutable" Version="1.7.0" IncludeAssets="All" />
     </ItemGroup>
-
 </Project>
