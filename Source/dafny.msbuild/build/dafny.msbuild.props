@@ -1,8 +1,8 @@
 <Project TreatAsLocalProperty="TaskFolder;TaskAssembly">
     <PropertyGroup>
         <!-- Fall back to the bin directory to make local testing much easier -->
-        <TaskAssembly Condition="Exists('$(MSBuildThisFileDirectory)..\tasks')">$(MSBuildThisFileDirectory)..\tasks\netcoreapp3.0\dafny.msbuild.dll</TaskAssembly>
-        <TaskAssembly Condition="!Exists('$(MSBuildThisFileDirectory)..\tasks')">$(MSBuildThisFileDirectory)..\bin\Debug\netcoreapp3.0\dafny.msbuild.dll</TaskAssembly>
+        <TaskAssembly Condition="Exists('$(MSBuildThisFileDirectory)..\tasks')">$(MSBuildThisFileDirectory)..\tasks\netstandard2.0\dafny.msbuild.dll</TaskAssembly>
+        <TaskAssembly Condition="!Exists('$(MSBuildThisFileDirectory)..\tasks')">$(MSBuildThisFileDirectory)..\bin\Debug\netstandard2.0\dafny.msbuild.dll</TaskAssembly>
 
         <Dafny Condition="'$(OS)' == 'Windows_NT'">Dafny.exe</Dafny>
         <Dafny Condition="'$(OS)' != 'Windows_NT'">dafny</Dafny>
