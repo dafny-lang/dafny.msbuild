@@ -17,7 +17,7 @@ namespace DafnyMSBuild
     public class DafnyVerifyTask : Task
     {
         private static string JOB_KEY = "Jobs";
-        private static string[] REQUIRED_PARAMS = { "timeLimit" };
+        private static string[] REQUIRED_PARAMS = { "timeLimit", "compile" };
 
         [Required]
         public string DafnyExecutable { get; set; }
@@ -28,15 +28,20 @@ namespace DafnyMSBuild
         [Required]
         public String[] DafnyVerificationParams { get; set; }
 
+        [Required]
+        public String[] DafnySharedParams { get; set; }
+
         public override bool Execute()
         {
-            // Determine all valid parameters
+            // Determine all valid parameters, start with shared params and then potentially override with
+            // verification-specific params
             var verificationParamsDict = new Dictionary<string, string>();
+            foreach (var param in DafnySharedParams) {
+                var keyVal = GetSplitParam(param);
+                verificationParamsDict[keyVal[0]] = keyVal.Length == 2 ? keyVal[1] : "";
+            }
             foreach (var param in DafnyVerificationParams) {
-                var keyVal = param.Split(':');
-                if (keyVal.Length > 2) {
-                   throw new ArgumentException("Invalid verification argument, multiple :");
-                }
+                var keyVal = GetSplitParam(param);
                 verificationParamsDict[keyVal[0]] = keyVal.Length == 2 ? keyVal[1] : "";
             }
             foreach (var requiredParam in REQUIRED_PARAMS) {
@@ -61,12 +66,21 @@ namespace DafnyMSBuild
             return results.All(x => x);
         }
 
-        private bool VerifyDafnyFile(ITaskItem file, Dictionary<string, string> verificationParams) {
+        private string[] GetSplitParam(string unsplitParam)
+        {
+            var splitParamList = unsplitParam.Split(':');
+            if (splitParamList.Length > 2) {
+                throw new ArgumentException("Invalid verification argument, multiple :");
+            }
+            return splitParamList;
+        }
+
+        private bool VerifyDafnyFile(ITaskItem file, Dictionary<string, string> verificationParams)
+        {
             Log.LogMessage(MessageImportance.High, "Verifying {0}...", file.ItemSpec);
             
             using (Process verifyProcess = new Process()) {
                 verifyProcess.StartInfo.FileName = DafnyExecutable;
-                verifyProcess.StartInfo.ArgumentList.Add("/compile:0");
                 // Apply all relevant parameters
                 foreach (var entry in verificationParams) {
                     if (JOB_KEY.Equals(entry.Key)) {

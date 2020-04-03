@@ -28,6 +28,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <DafnyShareParams Include="compile:0" />
+    </ItemGroup>
+
+    <ItemGroup>
         <DafnyVerifParams Include="timeLimit:30" />
     </ItemGroup>
 
