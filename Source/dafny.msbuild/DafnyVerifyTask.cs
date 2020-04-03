@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Build.Framework;
@@ -15,6 +16,8 @@ namespace DafnyMSBuild
      */
     public class DafnyVerifyTask : Task
     {
+        private static string JOB_KEY = "Jobs";
+
         [Required]
         public string DafnyExecutable { get; set; }
         
@@ -22,30 +25,54 @@ namespace DafnyMSBuild
         public ITaskItem[] DafnySourceFiles { get; set; }
 
         [Required]
-        public string TimeLimit { get; set; }
-        
-        public string Jobs { get; set; }
+        public String[] DafnyVerificationParams { get; set; }
 
-        public override bool Execute() {
-            ParallelOptions options = new ParallelOptions();
-            if (Jobs != null) {
-                options.MaxDegreeOfParallelism = int.Parse(Jobs);
+        public override bool Execute()
+        {
+            // Determine all valid parameters
+            var verificationParamsDict = new Dictionary<string, string>();
+            foreach (var param in DafnyVerificationParams) {
+                var keyVal = param.Split(':');
+                if (keyVal.Length > 2) {
+                   throw new ArgumentException("Invalid verification argument, multiple :");
+                }
+                verificationParamsDict[keyVal[0]] = keyVal.Length == 2 ? keyVal[1] : "";
             }
 
+            // Determine if the verification task should be performed in parallel
+            ParallelOptions options = new ParallelOptions();
+            string jobValue = "";
+            int jobCount = -1;
+            if (verificationParamsDict.TryGetValue(JOB_KEY, out jobValue) && int.TryParse(jobValue, out jobCount)) {
+                options.MaxDegreeOfParallelism = jobCount;
+            }
+
+            // Verify all files
             ConcurrentBag<bool> results = new ConcurrentBag<bool>();
             Parallel.ForEach(DafnySourceFiles, options, file => {
-                results.Add(VerifyDafnyFile(file));
+                results.Add(VerifyDafnyFile(file, verificationParamsDict));
             });
             return results.All(x => x);
         }
 
-        private bool VerifyDafnyFile(ITaskItem file) {
+        private bool VerifyDafnyFile(ITaskItem file, Dictionary<string, string> verificationParams) {
             Log.LogMessage(MessageImportance.High, "Verifying {0}...", file.ItemSpec);
             
-            using (System.Diagnostics.Process verifyProcess = new System.Diagnostics.Process()) {
+            using (Process verifyProcess = new Process()) {
                 verifyProcess.StartInfo.FileName = DafnyExecutable;
                 verifyProcess.StartInfo.ArgumentList.Add("/compile:0");
-                verifyProcess.StartInfo.ArgumentList.Add("/timeLimit:" + TimeLimit);
+                // Apply all relevant parameters
+                foreach (var entry in verificationParams) {
+                    if (JOB_KEY.Equals(entry.Key)) {
+                        continue;
+                    }
+                    if (String.IsNullOrEmpty(entry.Value)) {
+                        verifyProcess.StartInfo.ArgumentList.Add(String.Format("/{0}", entry.Key));
+                    }
+                    else {
+                        verifyProcess.StartInfo.ArgumentList.Add(String.Format("/{0}:{1}", entry.Key, entry.Value));
+                    }
+                }
                 verifyProcess.StartInfo.ArgumentList.Add(file.ItemSpec);
                 verifyProcess.StartInfo.UseShellExecute = false;
                 verifyProcess.StartInfo.RedirectStandardOutput = true;
@@ -56,12 +83,10 @@ namespace DafnyMSBuild
                 bool success = verifyProcess.ExitCode == 0;
                 
                 Log.LogMessage(MessageImportance.High, "Verifying {0} {1}", file.ItemSpec, success ? "succeeded!" : "failed:");
-                if (!success)
-                {
+                if (!success) {
                     string output = verifyProcess.StandardOutput.ReadToEnd();
                     Log.LogMessage(MessageImportance.High, output);
                 }
-                
                 return success;
             }
         }
