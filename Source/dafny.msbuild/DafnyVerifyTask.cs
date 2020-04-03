@@ -17,6 +17,7 @@ namespace DafnyMSBuild
     public class DafnyVerifyTask : Task
     {
         private static string JOB_KEY = "Jobs";
+        private static string[] REQUIRED_PARAMS = { "timeLimit" };
 
         [Required]
         public string DafnyExecutable { get; set; }
@@ -37,6 +38,11 @@ namespace DafnyMSBuild
                    throw new ArgumentException("Invalid verification argument, multiple :");
                 }
                 verificationParamsDict[keyVal[0]] = keyVal.Length == 2 ? keyVal[1] : "";
+            }
+            foreach (var requiredParam in REQUIRED_PARAMS) {
+                if (!verificationParamsDict.ContainsKey(requiredParam)) {
+                    throw new ArgumentException(String.Format("{0} required for verification", requiredParam));
+                }
             }
 
             // Determine if the verification task should be performed in parallel
