@@ -57,8 +57,8 @@ jobs:
       - name: Test VerifyDafny task (parallel)
         run: dotnet build dafny.msbuild/Test -t:VerifyDafny
       - name: Test VerifyDafny task (sequential)
-        run: dotnet build dafny.msbuild/Test -t:VerifyDafny -p:DafnyVerifParams='"Jobs:1"'
+        run: dotnet build dafny.msbuild/Test -t:VerifyDafny -p:VerifyDafnyJobs=1
       - name: Test VerifyDafny task (sequential with definite assignment)
-        run: dotnet build dafny.msbuild/Test -t:VerifyDafny -p:DafnyVerifParams='"Jobs:1;definiteAssignment:3"'
+        run: dotnet build dafny.msbuild/Test -t:VerifyDafny -p:VerifyDafnyJobs=1 -p:VerifyDafnyPassthrough='"definiteAssignment:3"'
       - name: Run tests on TestProject
         run: dotnet test dafny.msbuild/Test

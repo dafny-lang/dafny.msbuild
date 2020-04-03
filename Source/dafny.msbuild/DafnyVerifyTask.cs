@@ -16,8 +16,7 @@ namespace DafnyMSBuild
      */
     public class DafnyVerifyTask : Task
     {
-        private static string JOB_KEY = "Jobs";
-        private static string[] REQUIRED_PARAMS = { "timeLimit", "compile" };
+        private static string[] REQUIRED_PARAMS = { "timeLimit" };
 
         [Required]
         public string DafnyExecutable { get; set; }
@@ -25,21 +24,14 @@ namespace DafnyMSBuild
         [Required]
         public ITaskItem[] DafnySourceFiles { get; set; }
 
+        public string Jobs { get; set; }
+
         [Required]
         public String[] DafnyVerificationParams { get; set; }
 
-        [Required]
-        public String[] DafnySharedParams { get; set; }
-
-        public override bool Execute()
-        {
-            // Determine all valid parameters, start with shared params and then potentially override with
-            // verification-specific params
+        public override bool Execute() {
+            // Determine all valid parameters
             var verificationParamsDict = new Dictionary<string, string>();
-            foreach (var param in DafnySharedParams) {
-                var keyVal = GetSplitParam(param);
-                verificationParamsDict[keyVal[0]] = keyVal.Length == 2 ? keyVal[1] : "";
-            }
             foreach (var param in DafnyVerificationParams) {
                 var keyVal = GetSplitParam(param);
                 verificationParamsDict[keyVal[0]] = keyVal.Length == 2 ? keyVal[1] : "";
@@ -52,9 +44,8 @@ namespace DafnyMSBuild
 
             // Determine if the verification task should be performed in parallel
             ParallelOptions options = new ParallelOptions();
-            string jobValue = "";
-            int jobCount = -1;
-            if (verificationParamsDict.TryGetValue(JOB_KEY, out jobValue) && int.TryParse(jobValue, out jobCount)) {
+            int jobCount;
+            if (Jobs != null && int.TryParse(Jobs, out jobCount)) {
                 options.MaxDegreeOfParallelism = jobCount;
             }
 
@@ -66,8 +57,7 @@ namespace DafnyMSBuild
             return results.All(x => x);
         }
 
-        private string[] GetSplitParam(string unsplitParam)
-        {
+        private string[] GetSplitParam(string unsplitParam) {
             var splitParamList = unsplitParam.Split(':');
             if (splitParamList.Length > 2) {
                 throw new ArgumentException("Invalid verification argument, multiple :");
@@ -75,17 +65,14 @@ namespace DafnyMSBuild
             return splitParamList;
         }
 
-        private bool VerifyDafnyFile(ITaskItem file, Dictionary<string, string> verificationParams)
-        {
+        private bool VerifyDafnyFile(ITaskItem file, Dictionary<string, string> verificationParams) {
             Log.LogMessage(MessageImportance.High, "Verifying {0}...", file.ItemSpec);
             
             using (Process verifyProcess = new Process()) {
                 verifyProcess.StartInfo.FileName = DafnyExecutable;
+                verifyProcess.StartInfo.ArgumentList.Add("/compile:0");
                 // Apply all relevant parameters
                 foreach (var entry in verificationParams) {
-                    if (JOB_KEY.Equals(entry.Key)) {
-                        continue;
-                    }
                     if (String.IsNullOrEmpty(entry.Value)) {
                         verifyProcess.StartInfo.ArgumentList.Add(String.Format("/{0}", entry.Key));
                     }

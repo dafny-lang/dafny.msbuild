@@ -28,11 +28,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <DafnyShareParams Include="compile:0" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <DafnyVerifParams Include="timeLimit:30" />
+        <VerifyDafnyPassthrough Include="timeLimit:30" />
     </ItemGroup>
 
     <UsingTask TaskName="DafnyMSBuild.DafnyVerifyTask" AssemblyFile="$(TaskAssembly)"/>
