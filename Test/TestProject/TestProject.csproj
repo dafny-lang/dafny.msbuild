@@ -23,6 +23,6 @@
 
     <ItemGroup>
         <VerifyDafnyPassthrough Include="timeLimit:100" />
-        <VerifyDafnyPassthrough Include="$(VerifyDafnyPassthrough)" />
+        <VerifyDafnyPassthrough Include="$(VerifyTestProjectOverride)" />
     </ItemGroup>
 </Project>
