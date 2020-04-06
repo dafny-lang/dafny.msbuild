@@ -21,7 +21,7 @@ Build succeeded.
     0 Error(s)
 
 Time Elapsed 00:00:01.01
-> nuget push bin/Release/dafny.msbuild.0.3.0.nupkg -s https://api.nuget.org/v3/index.json
+> nuget push bin/Release/dafny.msbuild.0.3.0.nupkg -Source https://api.nuget.org/v3/index.json
 info : Pushing dafny.msbuild.0.3.0.nupkg to 'https://www.nuget.org/api/v2/package'...
 info :   PUT https://www.nuget.org/api/v2/package/
 warn : All published packages should have license information specified. Learn more: https://aka.ms/deprecateLicenseUrl.
