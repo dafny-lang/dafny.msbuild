@@ -1,4 +1,3 @@
-
 include "shared.dfy"
 
 module MyTests {

@@ -21,12 +21,15 @@
         Binaries directory is already on your $PATH
         -->
         <DafnyBinariesDir></DafnyBinariesDir>
-        <DafnyVerificationTimeLimit>30</DafnyVerificationTimeLimit>
     </PropertyGroup>
 
     <ItemGroup>
         <DafnySource Include="**/*.dfy" />
     </ItemGroup>
-    
+
+    <ItemGroup>
+        <VerifyDafnyPassthrough Include="timeLimit:30" />
+    </ItemGroup>
+
     <UsingTask TaskName="DafnyMSBuild.DafnyVerifyTask" AssemblyFile="$(TaskAssembly)"/>
 </Project>
