@@ -59,7 +59,7 @@ jobs:
       - name: Test VerifyDafny task (sequential)
         run: dotnet build dafny.msbuild/Test -t:VerifyDafny -p:VerifyDafnyJobs=1
       - name: Test VerifyDafny task (sequential with definite assignment)
-        run:
+        run: |
           if (dotnet build dafny.msbuild/Test -t:VerifyDafny -p:VerifyDafnyJobs=1 -p:VerifyTestProjectOverride="definiteAssignment:3") | grep -q 'Build FAILED.'; then
             echo "This failed, as it should have given the definiteAssignment flag"
             exit 0
