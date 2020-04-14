@@ -32,4 +32,5 @@
     </ItemGroup>
 
     <UsingTask TaskName="DafnyMSBuild.DafnyVerifyTask" AssemblyFile="$(TaskAssembly)"/>
+	<UsingTask TaskName="DafnyMSBuild.DafnyCompileTask" AssemblyFile="$(TaskAssembly)"/>
 </Project>

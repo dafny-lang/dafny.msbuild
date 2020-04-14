@@ -12,6 +12,10 @@
             BeforeTargets="CoreCompile"
             Inputs="$(MSBuildProjectFile);@(DafnySource)"
             Outputs="$(IntermediateOutputPath)GeneratedFromDafny.cs">
+		<DafnyCompileTask DafnySourceFiles="@(DafnySource)"
+                         DafnyExecutable="$(DafnyBinariesDir)$(Dafny)"
+                         Jobs="$(CompileDafnyJobs)"
+                         DafnyVerificationParams="@(CompileDafnyPassthrough)" />
         <PropertyGroup>
             <DafnyOutputFile>$(IntermediateOutputPath)GeneratedFromDafny.cs</DafnyOutputFile>
         </PropertyGroup>
