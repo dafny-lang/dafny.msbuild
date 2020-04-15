@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -30,8 +31,7 @@ namespace DafnyMSBuild
         [Required]
         public String[] DafnyCompileParams { get; set; } 
 
-        public override bool Execute() {
-            return true;
+        public override bool Execute() {   
             // Determine all valid parameters
             var verificationParamsDict = new Dictionary<string, string>();
             foreach (var param in DafnyCompileParams)   
@@ -39,7 +39,8 @@ namespace DafnyMSBuild
                 var keyVal = GetSplitParam(param);
                 verificationParamsDict[keyVal[0]] = keyVal.Length == 2 ? keyVal[1] : "";
             }
-
+            
+            
             // Determine if the verification task should be performed in parallel
             ParallelOptions options = new ParallelOptions();
             int jobCount;
@@ -47,12 +48,12 @@ namespace DafnyMSBuild
             {
                 options.MaxDegreeOfParallelism = jobCount;
             }
-
             // Verify all files
             ConcurrentBag<bool> results = new ConcurrentBag<bool>();
             Parallel.ForEach(DafnySourceFiles, options, file => {
-                results.Add(VerifyDafnyFile(file, verificationParamsDict));
+                results.Add(VerifyDafnyFile(file, verificationParamsDict)); 
             });
+            
             return results.All(x => x);
         }
 
@@ -70,7 +71,10 @@ namespace DafnyMSBuild
             using (Process verifyProcess = new Process()) {
                 verifyProcess.StartInfo.FileName = DafnyExecutable;
                 verifyProcess.StartInfo.ArgumentList.Add(
-                       String.Format("/out:{0} /compile:0 /spillTargetCode:3 /noVerify",DafnyOutputFile));
+                       String.Format("/out:{0}",DafnyOutputFile));
+                verifyProcess.StartInfo.ArgumentList.Add( "/compile:0" );
+                verifyProcess.StartInfo.ArgumentList.Add( "/spillTargetCode:3");
+                verifyProcess.StartInfo.ArgumentList.Add("/noVerify");
                 // Apply all relevant parameters
                 foreach (var entry in verificationParams) {
                     if (String.IsNullOrEmpty(entry.Value)) {
