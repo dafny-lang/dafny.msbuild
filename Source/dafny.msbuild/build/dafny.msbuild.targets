@@ -12,16 +12,17 @@
             BeforeTargets="CoreCompile"
             Inputs="$(MSBuildProjectFile);@(DafnySource)"
             Outputs="$(IntermediateOutputPath)GeneratedFromDafny.cs">
-		<DafnyCompileTask DafnySourceFiles="@(DafnySource)"
-                         DafnyExecutable="$(DafnyBinariesDir)$(Dafny)"
-                         Jobs="$(CompileDafnyJobs)"
-                         DafnyVerificationParams="@(CompileDafnyPassthrough)" />
         <PropertyGroup>
             <DafnyOutputFile>$(IntermediateOutputPath)GeneratedFromDafny.cs</DafnyOutputFile>
+			<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         </PropertyGroup>
         <Message Text="Compiling Dafny source files to $(DafnyOutputFile)..." Importance="high"/>
-        <Exec Command="$(DafnyBinariesDir)$(Dafny) /out:$(DafnyOutputFile) @(DafnySource, ' ') /compile:0 /spillTargetCode:3 /noVerify" />
-        <ItemGroup>
+		<DafnyCompileTask DafnySourceFiles="@(DafnySource)"
+                         DafnyExecutable="$(DafnyBinariesDir)$(Dafny)"
+						 DafnyOutputFile="$(DafnyOutputFile)"
+                         Jobs="$(CompileDafnyJobs)"
+                         DafnyCompileParams="@(CompileDafnyPassthrough)" />
+		<ItemGroup>
             <Compile Include="$(DafnyOutputFile)" />
             <!-- Register the generated file to be deleted when cleaning -->
             <FileWrites Include="$(DafnyOutputFile)"/>

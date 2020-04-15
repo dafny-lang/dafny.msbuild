@@ -7,11 +7,12 @@
         <!-- Stop dotnet from complaining about the non-standard layout -->
         <NoPackageAnalysis>true</NoPackageAnalysis>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-
+		<UseNETCoreGenerator>true</UseNETCoreGenerator>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <VersionPrefix>1.0.0</VersionPrefix>
         <VersionSuffix Condition="$(Configuration) == 'Debug'">build$([System.DateTime]::Now.ToString('yyyyMMdd-HHmm'))</VersionSuffix>
         <RootNamespace>DafnyMSBuild</RootNamespace>
+		<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     </PropertyGroup>
 
     <ItemGroup>
