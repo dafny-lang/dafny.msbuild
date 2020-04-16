@@ -29,6 +29,7 @@
 
     <ItemGroup>
         <VerifyDafnyPassthrough Include="timeLimit:30" />
+		<CompileDafnyPassthrough Include="coverage:test.txt" />
     </ItemGroup>
 
     <UsingTask TaskName="DafnyMSBuild.DafnyVerifyTask" AssemblyFile="$(TaskAssembly)"/>

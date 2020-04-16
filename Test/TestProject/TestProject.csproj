@@ -25,4 +25,9 @@
         <VerifyDafnyPassthrough Include="timeLimit:100" />
         <VerifyDafnyPassthrough Include="$(VerifyTestProjectOverride)" />
     </ItemGroup>
+	<ItemGroup>
+        <CompileDafnyPassthrough Include="coverage:tests4.txt" />
+		<CompileDafnyPassthrough Include="BranchCoverage.cs" />
+        <CompileDafnyPassthrough Include="$(VerifyTestProjectOverride)" />
+    </ItemGroup>
 </Project>
