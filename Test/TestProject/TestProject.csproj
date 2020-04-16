@@ -26,8 +26,6 @@
         <VerifyDafnyPassthrough Include="$(VerifyTestProjectOverride)" />
     </ItemGroup>
 	<ItemGroup>
-        <CompileDafnyPassthrough Include="coverage:tests4.txt" />
-		<CompileDafnyPassthrough Include="BranchCoverage.cs" />
-        <CompileDafnyPassthrough Include="$(VerifyTestProjectOverride)" />
+        <CompileDafnyPassthrough Include="/coverage:tests4.txt BranchCoverage.cs" />
     </ItemGroup>
 </Project>

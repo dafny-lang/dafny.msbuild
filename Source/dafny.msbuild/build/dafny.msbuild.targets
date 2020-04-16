@@ -17,11 +17,7 @@
 			<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
         </PropertyGroup>
         <Message Text="Compiling Dafny source files to $(DafnyOutputFile)..." Importance="high"/>
-		<DafnyCompileTask DafnySourceFiles="@(DafnySource)"
-                         DafnyExecutable="$(DafnyBinariesDir)$(Dafny)"
-						 DafnyOutputFile="$(DafnyOutputFile)"
-                         Jobs="$(CompileDafnyJobs)"
-                         DafnyCompileParams="@(CompileDafnyPassthrough)" />
+		<Exec Command="$(DafnyBinariesDir)$(Dafny) /out:$(DafnyOutputFile) @(DafnySource, ' ') @(CompileDafnyPassthrough, ' ') /compile:0 /spillTargetCode:3 /noVerify" />
 		<ItemGroup>
             <Compile Include="$(DafnyOutputFile)" />
             <!-- Register the generated file to be deleted when cleaning -->
