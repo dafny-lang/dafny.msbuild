@@ -29,7 +29,7 @@
 
     <ItemGroup>
         <VerifyDafnyPassthrough Include="timeLimit:30" />
-		<CompileDafnyPassthrough Include="/coverage:.\bin\Debug\netcoreapp3.0\legend.txt" />
+        <CompileDafnyPassthrough Include="/coverage:.\bin\Debug\netcoreapp3.0\legend.txt" />
     </ItemGroup>
 
     <UsingTask TaskName="DafnyMSBuild.DafnyVerifyTask" AssemblyFile="$(TaskAssembly)"/>
