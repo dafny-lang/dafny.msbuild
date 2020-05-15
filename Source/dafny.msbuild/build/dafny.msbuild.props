@@ -7,7 +7,7 @@
         <Dafny Condition="'$(OS)' == 'Windows_NT'">Dafny.exe</Dafny>
         <Dafny Condition="'$(OS)' != 'Windows_NT'">dafny</Dafny>
 
-        <!-- 
+        <!--
         TODO: This is to avoid lots of warnings from the Dafny-generated code
         for things like unused variables and unreachable code. It's unfortunate
         that we then won't get these warnings for hand-written C# code either, though.
@@ -16,11 +16,19 @@
          -->
         <NoWarn>0164;0219;1717;0162;0168</NoWarn>
 
-        <!-- 
+        <!--
         Defaulting to an empty string means we assume that the Dafny
         Binaries directory is already on your $PATH
         -->
         <DafnyBinariesDir></DafnyBinariesDir>
+
+        <!-- Optional, mutually-exclusive properties for Dafny-lang CLI version checking. -->
+        <!--suppress CheckTagEmptyBody -->
+        <DafnyVersion></DafnyVersion>
+        <!--suppress CheckTagEmptyBody -->
+        <DafnyVersionTag></DafnyVersionTag>
+        <!--suppress CheckTagEmptyBody -->
+        <DafnyVersionCommit></DafnyVersionCommit>
     </PropertyGroup>
 
     <ItemGroup>
@@ -33,4 +41,5 @@
     </ItemGroup>
 
     <UsingTask TaskName="DafnyMSBuild.DafnyVerifyTask" AssemblyFile="$(TaskAssembly)"/>
+    <UsingTask TaskName="DafnyMSBuild.DafnyVersionCheckTask" AssemblyFile="$(TaskAssembly)"/>
 </Project>
