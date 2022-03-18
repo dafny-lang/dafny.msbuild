@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
@@ -84,15 +81,7 @@ namespace DafnyMSBuild
          */
         private static string GetDafnyExecutableVersion(string dafnyExecutablePath)
         {
-            using var process = new Process
-            {
-                StartInfo = {FileName = dafnyExecutablePath, CreateNoWindow = true, UseShellExecute = false, RedirectStandardOutput = true}
-            };
-            // Dafny prints its version only if given at least one input file. With an invalid file name, it will print its version, then immediately exit.
-            process.StartInfo.ArgumentList.Add("");
-            process.Start();
-            process.WaitForExit();
-
+            using var process = Utils.RunProcess(dafnyExecutablePath, new[] { "/version" });
             var output = process.StandardOutput.ReadLine() ?? "";
             var match = new Regex("^Dafny ([0-9.]+)$").Match(output);
             return match.Success ? match.Groups[1].Value : null;
@@ -103,7 +92,7 @@ namespace DafnyMSBuild
          */
         private static string GetGitRepoHeadCommitHash(string workingDir)
         {
-            using var process = RunGitProcess(workingDir, new[] {"show-ref", "-s", "--verify", "HEAD"});
+            using var process = Utils.RunProcess("git", new[] {"show-ref", "-s", "--verify", "HEAD"}, workingDir);
             return process.ExitCode == 0 ? process.StandardOutput.ReadLine() : null;
         }
 
@@ -112,7 +101,7 @@ namespace DafnyMSBuild
          */
         private static string GetCommitHashForGitTag(string workingDir, string tagName)
         {
-            using var process = RunGitProcess(workingDir, new[] {"show-ref", "-s", "--verify", $"refs/tags/{tagName}"});
+            using var process = Utils.RunProcess("git", new[] {"show-ref", "-s", "--verify", $"refs/tags/{tagName}"}, workingDir);
             return process.ExitCode == 0 ? process.StandardOutput.ReadLine() : null;
         }
 
@@ -121,37 +110,13 @@ namespace DafnyMSBuild
          */
         private static bool IsGitWorkingTreeDirty(string workingDir)
         {
-            using var process = RunGitProcess(workingDir, new[] {"diff-index", "--quiet", "HEAD", "--"});
+            using var process = Utils.RunProcess("git", new[] {"diff-index", "--quiet", "HEAD", "--"}, workingDir);
             return process.ExitCode switch
             {
                 0 => false,
                 1 => true,
                 _ => throw new Exception("`git diff-index` failed")
             };
-        }
-
-        /**
-         * Runs Git in the given working directory and with the given arguments, and returns the Process.
-         * This assumes that `git` is in the user's PATH variable.
-         * The caller is responsible for disposing of the returned Process.
-         */
-        private static Process RunGitProcess(string workingDir, IEnumerable<string> args)
-        {
-            var process = new Process
-            {
-                StartInfo =
-                {
-                    FileName = "git",
-                    CreateNoWindow = true,
-                    UseShellExecute = false,
-                    WorkingDirectory = workingDir,
-                    RedirectStandardOutput = true
-                }
-            };
-            foreach (var arg in args) process.StartInfo.ArgumentList.Add(arg);
-            process.Start();
-            process.WaitForExit();
-            return process;
         }
     }
 }

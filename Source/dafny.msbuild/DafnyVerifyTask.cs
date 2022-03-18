@@ -20,7 +20,7 @@ namespace DafnyMSBuild
 
         [Required]
         public string DafnyExecutable { get; set; }
-        
+
         [Required]
         public ITaskItem[] DafnySourceFiles { get; set; }
 
@@ -67,35 +67,24 @@ namespace DafnyMSBuild
 
         private bool VerifyDafnyFile(ITaskItem file, Dictionary<string, string> verificationParams) {
             Log.LogMessage(MessageImportance.High, "Verifying {0}...", file.ItemSpec);
-            
-            using (Process verifyProcess = new Process()) {
-                verifyProcess.StartInfo.FileName = DafnyExecutable;
-                verifyProcess.StartInfo.ArgumentList.Add("/compile:0");
-                // Apply all relevant parameters
-                foreach (var entry in verificationParams) {
-                    if (String.IsNullOrEmpty(entry.Value)) {
-                        verifyProcess.StartInfo.ArgumentList.Add(String.Format("/{0}", entry.Key));
-                    }
-                    else {
-                        verifyProcess.StartInfo.ArgumentList.Add(String.Format("/{0}:{1}", entry.Key, entry.Value));
-                    }
-                }
-                verifyProcess.StartInfo.ArgumentList.Add(file.ItemSpec);
-                verifyProcess.StartInfo.UseShellExecute = false;
-                verifyProcess.StartInfo.RedirectStandardOutput = true;
-                verifyProcess.StartInfo.RedirectStandardError = true;
-                verifyProcess.StartInfo.CreateNoWindow = true;
-                verifyProcess.Start();
-                verifyProcess.WaitForExit();
-                bool success = verifyProcess.ExitCode == 0;
-                
-                Log.LogMessage(MessageImportance.High, "Verifying {0} {1}", file.ItemSpec, success ? "succeeded!" : "failed:");
-                if (!success) {
-                    string output = verifyProcess.StandardOutput.ReadToEnd();
-                    Log.LogMessage(MessageImportance.High, output);
-                }
-                return success;
+
+            var args = new List<string> { "/compile:0" };
+            // Apply all relevant parameters
+            foreach (var (key, value) in verificationParams)
+            {
+                args.Add(string.IsNullOrEmpty(value) ? $"/{value}" : $"/{key}:{value}");
             }
+            args.Add(file.ItemSpec);
+
+            using var verifyProcess = Utils.RunProcess(DafnyExecutable, args);
+            bool success = verifyProcess.ExitCode == 0;
+
+            Log.LogMessage(MessageImportance.High, "Verifying {0} {1}", file.ItemSpec, success ? "succeeded!" : "failed:");
+            if (!success) {
+                string output = verifyProcess.StandardOutput.ReadToEnd();
+                Log.LogMessage(MessageImportance.High, output);
+            }
+            return success;
         }
     }
 }
