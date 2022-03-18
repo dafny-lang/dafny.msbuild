@@ -37,25 +37,30 @@ namespace DafnyMSBuild
                 return Fail("The DafnyVersion, DafnyVersionCommit, and DafnyVersionTag properties are mutually exclusive");
             }
 
-            if (enforceVersion) return DafnyVersion == foundDafnyVersion
-                ? Success(foundDafnyVersion)
-                : Fail($"Expected Dafny version \"{DafnyVersion}\", found \"{foundDafnyVersion}\"");
+            if (enforceVersion)
+            {
+                return foundDafnyVersion == DafnyVersion
+                    ? Success(foundDafnyVersion)
+                    : Fail($"Expected Dafny version \"{DafnyVersion}\", found \"{foundDafnyVersion}\"");
+            }
 
             var expectedRepoHead = enforceCommit ? $"commit {DafnyVersionCommit}" : $"tag {DafnyVersionTag}";
             if (string.IsNullOrEmpty(DafnyBinariesDir))
             {
-                return Fail("DafnyBinariesDir must be set to a directory within a Git repo in order to check DafnyVersionCommit or DafnyVersionTag");
+                return Fail("DafnyBinariesDir must be within a Git repository in order to check DafnyVersionCommit or DafnyVersionTag");
             }
             if (IsGitWorkingTreeDirty(DafnyBinariesDir))
             {
-                return Fail($"Expected Dafny executable Git repo at {expectedRepoHead}, but working tree or index has changes");
+                return Fail($"Expected clean Dafny Git repository at {expectedRepoHead}, but working tree or index has changes");
             }
 
-            var specifiedCommitHash = enforceCommit ? DafnyVersionCommit : GetCommitHashForGitTag(DafnyBinariesDir, DafnyVersionTag);
             var repoHeadCommitHash = GetGitRepoHeadCommitHash(DafnyBinariesDir);
-            return repoHeadCommitHash != null && repoHeadCommitHash == specifiedCommitHash
-                ? Success(foundDafnyVersion)
-                : Fail($"Expected Dafny executable Git repo at {expectedRepoHead}, but HEAD is at {repoHeadCommitHash}");
+            var expectedCommitHash = enforceCommit
+                ? DafnyVersionCommit
+                : GetCommitHashForGitTag(DafnyBinariesDir, DafnyVersionTag);
+            return repoHeadCommitHash == expectedCommitHash
+                ? Success($"${DafnyVersion} in Git repository at ${expectedRepoHead}")
+                : Fail($"Expected Dafny Git repository at {expectedRepoHead}, but HEAD is at commit {repoHeadCommitHash}");
         }
 
         /**
