@@ -20,6 +20,7 @@
         Defaulting to an empty string means we assume that the Dafny
         Binaries directory is already on your $PATH
         -->
+        <!--suppress CheckTagEmptyBody -->
         <DafnyBinariesDir></DafnyBinariesDir>
 
         <!-- Optional, mutually-exclusive properties for Dafny-lang CLI version checking. -->
