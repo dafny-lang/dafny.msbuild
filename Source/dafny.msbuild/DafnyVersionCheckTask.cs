@@ -41,7 +41,7 @@ namespace DafnyMSBuild
             {
                 return foundDafnyVersion == DafnyVersion
                     ? Success(foundDafnyVersion)
-                    : Fail($"Expected Dafny version \"{DafnyVersion}\", found \"{foundDafnyVersion}\"");
+                    : Fail($"Expected Dafny version {DafnyVersion}, found {foundDafnyVersion}");
             }
 
             var expectedRepoHead = enforceCommit ? $"commit {DafnyVersionCommit}" : $"tag {DafnyVersionTag}";
@@ -59,7 +59,7 @@ namespace DafnyMSBuild
                 ? DafnyVersionCommit
                 : GetCommitHashForGitTag(DafnyBinariesDir, DafnyVersionTag);
             return repoHeadCommitHash == expectedCommitHash
-                ? Success($"${DafnyVersion} in Git repository at ${expectedRepoHead}")
+                ? Success($"{DafnyVersion} in Git repository at {expectedRepoHead}")
                 : Fail($"Expected Dafny Git repository at {expectedRepoHead}, but HEAD is at commit {repoHeadCommitHash}");
         }
 
