@@ -22,7 +22,8 @@
     <Import Project="../../Source/dafny.msbuild/build/dafny.msbuild.targets" />
 
     <PropertyGroup>
-        <DafnyVersionTag>v3.5.0</DafnyVersionTag>
+        <!-- Corresponds to tag v3.5.0, which we can't check directly since we no longer install Dafny from source -->
+        <DafnyVersion>3.5.0.40314</DafnyVersion>
     </PropertyGroup>
 
     <ItemGroup>
