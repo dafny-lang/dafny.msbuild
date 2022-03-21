@@ -86,8 +86,7 @@ namespace DafnyMSBuild
          */
         private static string GetDafnyExecutableVersion(string dafnyExecutablePath)
         {
-            using var process = Utils.RunProcess(dafnyExecutablePath, new[] { "/version" });
-            var output = process.StandardOutput.ReadLine() ?? "";
+            using var process = Utils.RunProcess(dafnyExecutablePath, new[] { "/version" }, out var output);
             var match = new Regex("^Dafny ([0-9.]+)$").Match(output);
             return match.Success ? match.Groups[1].Value : null;
         }
@@ -97,8 +96,8 @@ namespace DafnyMSBuild
          */
         private static string GetGitRepoHeadCommitHash(string workingDir)
         {
-            using var process = Utils.RunProcess("git", new[] {"show-ref", "-s", "--verify", "HEAD"}, workingDir);
-            return process.ExitCode == 0 ? process.StandardOutput.ReadLine() : null;
+            using var process = Utils.RunProcess("git", new[] {"show-ref", "-s", "--verify", "HEAD"}, out var stdout, workingDir);
+            return process.ExitCode == 0 ? stdout.Trim() : null;
         }
 
         /**
@@ -106,8 +105,8 @@ namespace DafnyMSBuild
          */
         private static string GetCommitHashForGitTag(string workingDir, string tagName)
         {
-            using var process = Utils.RunProcess("git", new[] {"show-ref", "-s", "--verify", $"refs/tags/{tagName}"}, workingDir);
-            return process.ExitCode == 0 ? process.StandardOutput.ReadLine() : null;
+            using var process = Utils.RunProcess("git", new[] {"show-ref", "-s", "--verify", $"refs/tags/{tagName}"}, out var stdout, workingDir);
+            return process.ExitCode == 0 ? stdout.Trim() : null;
         }
 
         /**
@@ -115,7 +114,7 @@ namespace DafnyMSBuild
          */
         private static bool IsGitWorkingTreeDirty(string workingDir)
         {
-            using var process = Utils.RunProcess("git", new[] {"diff-index", "--quiet", "HEAD", "--"}, workingDir);
+            using var process = Utils.RunProcess("git", new[] {"diff-index", "--quiet", "HEAD", "--"}, out _, workingDir);
             return process.ExitCode switch
             {
                 0 => false,

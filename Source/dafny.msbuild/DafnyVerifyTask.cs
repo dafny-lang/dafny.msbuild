@@ -76,13 +76,12 @@ namespace DafnyMSBuild
             }
             args.Add(file.ItemSpec);
 
-            using var verifyProcess = Utils.RunProcess(DafnyExecutable, args);
+            using var verifyProcess = Utils.RunProcess(DafnyExecutable, args, out var stdout);
             bool success = verifyProcess.ExitCode == 0;
 
             Log.LogMessage(MessageImportance.High, "Verifying {0} {1}", file.ItemSpec, success ? "succeeded!" : "failed:");
             if (!success) {
-                string output = verifyProcess.StandardOutput.ReadToEnd();
-                Log.LogMessage(MessageImportance.High, output);
+                Log.LogMessage(MessageImportance.High, stdout);
             }
             return success;
         }
