@@ -11,15 +11,20 @@
 
     <!--
         Normally a project just has to reference this package like this:
-        
+
         <PackageReference Include="dafny.msbuild" Version="*.*.*" />
-        
+
         But to test the functionality without packaging up the nupkg itself,
         we import the properties and target directly in the same way nuget
         will automatically instead.
     -->
     <Import Project="../../Source/dafny.msbuild/build/dafny.msbuild.props" />
     <Import Project="../../Source/dafny.msbuild/build/dafny.msbuild.targets" />
+
+    <PropertyGroup>
+        <!-- Corresponds to tag v3.5.0, which we can't check directly since we no longer install Dafny from source -->
+        <DafnyVersion>3.5.0.40314</DafnyVersion>
+    </PropertyGroup>
 
     <ItemGroup>
         <VerifyDafnyPassthrough Include="timeLimit:100" />

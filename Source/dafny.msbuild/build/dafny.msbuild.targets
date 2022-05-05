@@ -1,17 +1,27 @@
 <Project>
     <!-- TODO: hook this up as a CodeAnalysis plugin instead? -->
     <Target Name="VerifyDafny">
-        <DafnyVerifyTask DafnySourceFiles="@(DafnySource)" 
+        <DafnyVersionCheckTask DafnyBinariesDir="$(DafnyBinariesDir)"
+                               DafnyExecutablePath="$(DafnyBinariesDir)$(Dafny)"
+                               DafnyVersion="$(DafnyVersion)"
+                               DafnyVersionCommit="$(DafnyVersionCommit)"
+                               DafnyVersionTag="$(DafnyVersionTag)" />
+        <DafnyVerifyTask DafnySourceFiles="@(DafnySource)"
                          DafnyExecutable="$(DafnyBinariesDir)$(Dafny)"
                          Jobs="$(VerifyDafnyJobs)"
                          DafnyVerificationParams="@(VerifyDafnyPassthrough)" />
     </Target>
-    
+
     <Target Name="CompileDafny"
             AfterTargets="ResolveReferences"
             BeforeTargets="CoreCompile"
             Inputs="$(MSBuildProjectFile);@(DafnySource)"
             Outputs="$(IntermediateOutputPath)GeneratedFromDafny.cs">
+        <DafnyVersionCheckTask DafnyBinariesDir="$(DafnyBinariesDir)"
+                               DafnyExecutablePath="$(DafnyBinariesDir)$(Dafny)"
+                               DafnyVersion="$(DafnyVersion)"
+                               DafnyVersionCommit="$(DafnyVersionCommit)"
+                               DafnyVersionTag="$(DafnyVersionTag)" />
         <PropertyGroup>
             <DafnyOutputFile>$(IntermediateOutputPath)GeneratedFromDafny.cs</DafnyOutputFile>
         </PropertyGroup>
@@ -26,6 +36,11 @@
 
     <!-- TODO: Define Inputs and Outputs for this -->
     <Target Name="CompileDafnyToJS">
+        <DafnyVersionCheckTask DafnyBinariesDir="$(DafnyBinariesDir)"
+                               DafnyExecutablePath="$(DafnyBinariesDir)$(Dafny)"
+                               DafnyVersion="$(DafnyVersion)"
+                               DafnyVersionCommit="$(DafnyVersionCommit)"
+                               DafnyVersionTag="$(DafnyVersionTag)" />
         <Exec Command="$(Dafny) /out:build/Main @(DafnySource, ' ') /compile:2 /noVerify /noIncludes /compileTarget:js /spillTargetCode:1" />
     </Target>
 </Project>
