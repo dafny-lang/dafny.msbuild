@@ -32,7 +32,10 @@ namespace DafnyMSBuild
                     RedirectStandardOutput = true
                 }
             };
-            foreach (var arg in args) process.StartInfo.ArgumentList.Add(arg);
+            foreach (var arg in args)
+            {
+                process.StartInfo.ArgumentList.Add(arg);
+            }
             process.Start();
 
             // We must read before waiting, or else deadlock is possible.
